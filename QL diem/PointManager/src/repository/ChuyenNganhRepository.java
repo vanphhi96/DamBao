@@ -39,6 +39,8 @@ public class ChuyenNganhRepository implements IChuyenNganh {
                 ChuyenNganh chuyenNganh = new ChuyenNganh(id, ten, mota);
                 chuyenNganhs.add(chuyenNganh);
             }
+            statement.close();
+            rs.close();
             return chuyenNganhs;
         } catch (SQLException ex) {
             Logger.getLogger(ChuyenNganhRepository.class.getName()).log(Level.SEVERE, null, ex);

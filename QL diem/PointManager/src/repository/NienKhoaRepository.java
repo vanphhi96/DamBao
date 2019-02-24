@@ -24,10 +24,32 @@ import util.ConnectDB;
  * @author vanph
  */
 public class NienKhoaRepository implements INienKhoa {
- IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
+
+    IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
+
     @Override
     public NienKhoa getByID(int idNienKhoa) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        NienKhoa nienKhoa = null;
+        try {
+            String sql = "SELECT * FROM tblNienKhoa WHERE idNienKhoa = ?";
+            Connection connect = ConnectDB.getConnect();
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, idNienKhoa);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int idChuyenNganh = rs.getInt("idChuyenNganh");
+                String ten = rs.getString("nienKhoa");
+                String mota = rs.getString("moTa");
+                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(idChuyenNganh);
+                nienKhoa = new NienKhoa(idNienKhoa, chuyenNganh, ten, mota);
+
+            }
+
+            return nienKhoa;
+        } catch (SQLException ex) {
+
+        }
+        return nienKhoa;
     }
 
     @Override
@@ -48,10 +70,10 @@ public class NienKhoaRepository implements INienKhoa {
                 NienKhoa nienKhoa = new NienKhoa(id, chuyenNganh, ten, mota);
                 nienKhoas.add(nienKhoa);
             }
-            
+
             return nienKhoas;
         } catch (SQLException ex) {
-            
+
         }
 
         return nienKhoas;

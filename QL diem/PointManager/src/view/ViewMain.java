@@ -6,17 +6,24 @@
 package view;
 
 import irepository.IChuyenNganh;
+import irepository.ILopMonHoc;
 import irepository.IMonHoc;
 import irepository.IMonKhoaHoc;
+import irepository.IMonNganh;
 import irepository.INienKhoa;
 import java.util.ArrayList;
 import java.util.List;
 import model.ChuyenNganh;
+import model.LopMonHoc;
+import model.MonChuyenNganh;
 import model.MonHoc;
+import model.MonKhoaHoc;
 import model.NienKhoa;
 import repository.ChuyenNganhRepository;
+import repository.LopMonHocRepository;
 import repository.MonHocRepository;
 import repository.MonKhoaHocRepository;
+import repository.MonNganhRepository;
 import repository.NienKhoaRepository;
 
 /**
@@ -24,41 +31,90 @@ import repository.NienKhoaRepository;
  * @author vanph
  */
 public class ViewMain extends javax.swing.JFrame {
-    private IMonHoc  monHocRepo = new MonHocRepository();
+
+    private IMonHoc monHocRepo = new MonHocRepository();
     private INienKhoa nienKhoaRepo = new NienKhoaRepository();
     private IMonKhoaHoc monKhoaHocRepo = new MonKhoaHocRepository();
     private IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
+    private ILopMonHoc lopMonHocRepo = new LopMonHocRepository();
+    private IMonNganh monNganhRepo = new MonNganhRepository();
+    private List<LopMonHoc> lopMonHocs = new ArrayList<>();
     private List<MonHoc> monHocs = new ArrayList<MonHoc>();
     private List<ChuyenNganh> chuyenNganhs = new ArrayList();
     private List<NienKhoa> nienKhoas = new ArrayList<>();
+    private List<MonKhoaHoc> monKhoaHocs = new ArrayList<MonKhoaHoc>();
+    private MonKhoaHoc monKhoaHoc = null;
+
     /**
      * Creates new form ViewMain
      */
     public ViewMain() {
         initComponents();
-        monHocs = monHocRepo.getAll();
         chuyenNganhs = chuyenNganhRepo.getAll();
         nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganhs.get(0).getId());
-        addCbMonHoc();
-        addCbNienHoc();
         addCbChuyenNganh();
     }
 
-    private void addCbMonHoc(){
-        for(int i=0; i<monHocs.size(); i++){
-            cb_monhoc.addItem(monHocs.get(i).getTenMonHoc());
+    private void addCbMonHoc() {
+        cb_monhoc.removeAllItems();
+        if (!monHocs.isEmpty()) {
+            for (int i = 0; i < monHocs.size(); i++) {
+                cb_monhoc.addItem(monHocs.get(i).getTenMonHoc());
+            }
+        }
+
+    }
+
+    private void addCbNienKhoa() {
+        cb_khoahoc.removeAllItems();
+        cb_monhoc.removeAllItems();
+        if (!nienKhoas.isEmpty()) {
+            for (int i = 0; i < nienKhoas.size(); i++) {
+                cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
+            }
+            monHocs = monKhoaHocRepo.getMonKhoa(nienKhoas.get(0).getId());
+            addCbMonHoc();
+            addCbLop();
+        }
+
+    }
+
+    private void addCbLop() {
+
+        MonHoc mh = monHocs.get(cb_monhoc.getSelectedIndex());
+        NienKhoa nk = nienKhoas.get(cb_khoahoc.getSelectedIndex());
+        ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+        MonChuyenNganh mNganh = monNganhRepo.getMonChuyenNganh(mh.getId(), chuyenNganh.getId());
+        if (nk == null || mNganh == null) {
+            return;
+        }
+        monKhoaHoc = monKhoaHocRepo.getMonKhoaHoc(mNganh.getId(), nk.getId());
+        if(monKhoaHoc==null){
+            return;
+        }
+        System.out.println(" id mon khoa hoc " + monKhoaHoc.getIdMonKhoaHoc());
+        lopMonHocs = lopMonHocRepo.getLopMonHocs(monKhoaHoc.getIdMonKhoaHoc());
+        cb_lop.removeAllItems();
+        if (!lopMonHocs.isEmpty()) {
+            for (int i = 0; i < lopMonHocs.size(); i++) {
+                cb_lop.addItem(lopMonHocs.get(i).getTenLop());
+            }
         }
     }
-    private void addCbNienHoc(){
-          for(int i=0; i<nienKhoas.size(); i++){
-            cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
+
+    private void addCbChuyenNganh() {
+        cb_khoa.removeAllItems();
+        cb_khoahoc.removeAllItems();
+        if (!chuyenNganhs.isEmpty()) {
+            for (int i = 0; i < chuyenNganhs.size(); i++) {
+                cb_khoa.addItem(chuyenNganhs.get(i).getTenChuyenNganh());
+            }
+            nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganhs.get(0).getId());
+            addCbNienKhoa();
         }
+
     }
-    private void addCbChuyenNganh(){
-         for(int i=0; i<chuyenNganhs.size(); i++){
-            cb_khoa.addItem(chuyenNganhs.get(i).getTenChuyenNganh());
-        }
-    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -125,7 +181,7 @@ public class ViewMain extends javax.swing.JFrame {
             table_diemsv.getColumnModel().getColumn(4).setHeaderValue("Điểm thi");
         }
 
-        jLabel1.setText("Khoa: ");
+        jLabel1.setText("Chuyên ngành: ");
 
         jLabel2.setText("Khóa học: ");
 
@@ -159,9 +215,39 @@ public class ViewMain extends javax.swing.JFrame {
             }
         });
 
+        cb_khoa.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_khoaItemStateChanged(evt);
+            }
+        });
+        cb_khoa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cb_khoaMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cb_khoaMouseEntered(evt);
+            }
+        });
         cb_khoa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cb_khoaActionPerformed(evt);
+            }
+        });
+
+        cb_khoahoc.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_khoahocItemStateChanged(evt);
+            }
+        });
+        cb_khoahoc.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cb_khoahocMouseEntered(evt);
+            }
+        });
+
+        cb_monhoc.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cb_monhocMouseEntered(evt);
             }
         });
 
@@ -183,8 +269,8 @@ public class ViewMain extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cb_khoahoc, 0, 105, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cb_khoahoc, 0, 85, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnSearch2, javax.swing.GroupLayout.Alignment.LEADING)))
@@ -192,7 +278,7 @@ public class ViewMain extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cb_monhoc, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cb_lop, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -251,7 +337,7 @@ public class ViewMain extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1)
         );
 
         pack();
@@ -272,6 +358,37 @@ public class ViewMain extends javax.swing.JFrame {
     private void cb_khoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_khoaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cb_khoaActionPerformed
+
+    private void cb_khoaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoaMouseEntered
+
+    }//GEN-LAST:event_cb_khoaMouseEntered
+
+    private void cb_khoaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoaMouseClicked
+
+    }//GEN-LAST:event_cb_khoaMouseClicked
+
+    private void cb_khoaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoaItemStateChanged
+        ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+        nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganh.getId());
+        addCbNienKhoa();
+    }//GEN-LAST:event_cb_khoaItemStateChanged
+
+    private void cb_khoahocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoahocItemStateChanged
+
+    }//GEN-LAST:event_cb_khoahocItemStateChanged
+
+    private void cb_khoahocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoahocMouseEntered
+        NienKhoa khoa = nienKhoas.get(cb_khoahoc.getSelectedIndex());
+        if(khoa==null){
+            return;
+        }
+        monHocs = monKhoaHocRepo.getMonKhoa(khoa.getId());
+        addCbMonHoc();
+    }//GEN-LAST:event_cb_khoahocMouseEntered
+
+    private void cb_monhocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_monhocMouseEntered
+        addCbLop();
+    }//GEN-LAST:event_cb_monhocMouseEntered
 
     /**
      * @param args the command line arguments

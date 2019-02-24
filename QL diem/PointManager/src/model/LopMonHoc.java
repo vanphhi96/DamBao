@@ -17,19 +17,29 @@ public class LopMonHoc {
     private MonKhoaHoc monKhoaHoc;
     private int soLuong;
     private String phongHoc;
+    private String tenLop;
     private List<SVLopMonHoc> svLopMonHocs = new ArrayList<>();
 
-    public LopMonHoc(int idLop, MonKhoaHoc monKhoaHoc, int soLuong, String phongHoc) {
+    public LopMonHoc(int idLop, MonKhoaHoc monKhoaHoc, int soLuong, String phongHoc,String tenLop) {
         this.idLop = idLop;
         this.monKhoaHoc = monKhoaHoc;
         this.soLuong = soLuong;
         this.phongHoc = phongHoc;
+        this.tenLop = tenLop;
     }
 
     public List<SVLopMonHoc> getSvLopMonHocs() {
         return svLopMonHocs;
     }
 
+    public String getTenLop() {
+        return tenLop;
+    }
+
+    public void setTenLop(String tenLop) {
+        this.tenLop = tenLop;
+    }
+    
     public void setSvLopMonHocs(List<SVLopMonHoc> svLopMonHocs) {
         this.svLopMonHocs = svLopMonHocs;
     }
