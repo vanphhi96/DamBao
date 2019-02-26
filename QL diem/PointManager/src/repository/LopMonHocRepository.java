@@ -25,7 +25,31 @@ public class LopMonHocRepository implements ILopMonHoc {
 
     @Override
     public LopMonHoc getByID(int idLopMonHoc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LopMonHoc lopMonHoc = null;
+        String sql = "SELECT * FROM tblLopMonHoc WHERE id = ?";
+        Connection connect = ConnectDB.getConnect();
+        try {
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, idLopMonHoc);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                int idMonKhoaHoc = rs.getInt("idMonKhoaHoc");
+                String phongHoc = rs.getString("phongHoc");
+                String tenLop = rs.getString("tenLop");
+                int soLuong = rs.getInt("soLuong");
+                IMonKhoaHoc iMonKhoaHoc = new MonKhoaHocRepository();
+                MonKhoaHoc monKhoaHoc = iMonKhoaHoc.getByID(idMonKhoaHoc);
+                lopMonHoc = new LopMonHoc(idLopMonHoc, monKhoaHoc, soLuong, phongHoc, tenLop);
+                stmt.close();
+                rs.close();
+                return lopMonHoc;
+            }
+
+        } catch (SQLException ex) {
+
+        }
+        return lopMonHoc;
     }
 
     @Override
@@ -46,12 +70,12 @@ public class LopMonHocRepository implements ILopMonHoc {
                 int soLuong = rs.getInt("soLuong");
                 IMonKhoaHoc iMonKhoaHoc = new MonKhoaHocRepository();
                 MonKhoaHoc monKhoaHoc = iMonKhoaHoc.getByID(idMonKhoaHoc);
-                LopMonHoc lopMonHoc = new LopMonHoc(id,monKhoaHoc,soLuong,phongHoc,tenLop);
+                LopMonHoc lopMonHoc = new LopMonHoc(id, monKhoaHoc, soLuong, phongHoc, tenLop);
                 hocs.add(lopMonHoc);
-            } 
+            }
             return hocs;
         } catch (SQLException ex) {
-           
+
         }
         return hocs;
     }

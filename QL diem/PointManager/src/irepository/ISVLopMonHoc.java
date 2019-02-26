@@ -13,7 +13,7 @@ import model.SVLopMonHoc;
  * @author vanph
  */
 public interface ISVLopMonHoc {
-    SVLopMonHoc getByID(int idSVLopMonHoc);
+    SVLopMonHoc getByID(int idSVLopMonHoc, int idLop);
     boolean update(SVLopMonHoc svLopMonHoc);
     List<SVLopMonHoc> getSVLopMonHoc(int idLopMonHoc);
 }

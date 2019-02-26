@@ -23,6 +23,14 @@ public class SinhVien {
     public SinhVien() {
     }
 
+    public SinhVien(int id, String tenSV, Date ngaySinh, String mota, NienKhoa nienKhoa) {
+        this.id = id;
+        this.tenSV = tenSV;
+        this.ngaySinh = ngaySinh;
+        this.mota = mota;
+        this.nienKhoa = nienKhoa;
+    }
+    
     public List<SVLopMonHoc> getSvLopMonHocs() {
         return svLopMonHocs;
     }

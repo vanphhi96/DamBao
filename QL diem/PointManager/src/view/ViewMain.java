@@ -11,20 +11,27 @@ import irepository.IMonHoc;
 import irepository.IMonKhoaHoc;
 import irepository.IMonNganh;
 import irepository.INienKhoa;
+import irepository.ISVLopMonHoc;
+import irepository.ISinhVien;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import model.ChuyenNganh;
 import model.LopMonHoc;
 import model.MonChuyenNganh;
 import model.MonHoc;
 import model.MonKhoaHoc;
 import model.NienKhoa;
+import model.SVLopMonHoc;
+import model.SinhVien;
 import repository.ChuyenNganhRepository;
 import repository.LopMonHocRepository;
 import repository.MonHocRepository;
 import repository.MonKhoaHocRepository;
 import repository.MonNganhRepository;
 import repository.NienKhoaRepository;
+import repository.SVLopMonHocRepository;
+import repository.SinhVienRepository;
 
 /**
  *
@@ -38,11 +45,15 @@ public class ViewMain extends javax.swing.JFrame {
     private IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
     private ILopMonHoc lopMonHocRepo = new LopMonHocRepository();
     private IMonNganh monNganhRepo = new MonNganhRepository();
+    private ISinhVien sinhVienRepo = new SinhVienRepository();
+    private ISVLopMonHoc sinhVienLopRepo = new SVLopMonHocRepository();
     private List<LopMonHoc> lopMonHocs = new ArrayList<>();
     private List<MonHoc> monHocs = new ArrayList<MonHoc>();
     private List<ChuyenNganh> chuyenNganhs = new ArrayList();
     private List<NienKhoa> nienKhoas = new ArrayList<>();
     private List<MonKhoaHoc> monKhoaHocs = new ArrayList<MonKhoaHoc>();
+    private List<SinhVien> sinhViens = new ArrayList<>();
+    private List<SVLopMonHoc> sinhVienLopMHs = new ArrayList<>();
     private MonKhoaHoc monKhoaHoc = null;
 
     /**
@@ -51,16 +62,22 @@ public class ViewMain extends javax.swing.JFrame {
     public ViewMain() {
         initComponents();
         chuyenNganhs = chuyenNganhRepo.getAll();
-        nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganhs.get(0).getId());
         addCbChuyenNganh();
     }
 
     private void addCbMonHoc() {
         cb_monhoc.removeAllItems();
-        if (!monHocs.isEmpty()) {
-            for (int i = 0; i < monHocs.size(); i++) {
-                cb_monhoc.addItem(monHocs.get(i).getTenMonHoc());
+        cb_lop.removeAllItems();
+        if (!nienKhoas.isEmpty()) {
+            NienKhoa khoa = nienKhoas.get(cb_khoahoc.getSelectedIndex());
+            monHocs = monKhoaHocRepo.getMonKhoa(khoa.getId());
+            if (!monHocs.isEmpty()) {
+                for (int i = 0; i < monHocs.size(); i++) {
+                    cb_monhoc.addItem(monHocs.get(i).getTenMonHoc());
+                }
+
             }
+            addCbLop();
         }
 
     }
@@ -68,38 +85,67 @@ public class ViewMain extends javax.swing.JFrame {
     private void addCbNienKhoa() {
         cb_khoahoc.removeAllItems();
         cb_monhoc.removeAllItems();
-        if (!nienKhoas.isEmpty()) {
-            for (int i = 0; i < nienKhoas.size(); i++) {
-                cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
+        ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+        if (chuyenNganh != null) {
+            nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganh.getId());
+            if (!nienKhoas.isEmpty()) {
+                for (int i = 0; i < nienKhoas.size(); i++) {
+                    cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
+                }
+                monHocs = monKhoaHocRepo.getMonKhoa(nienKhoas.get(0).getId());
+
             }
-            monHocs = monKhoaHocRepo.getMonKhoa(nienKhoas.get(0).getId());
-            addCbMonHoc();
-            addCbLop();
         }
+        addCbMonHoc();
 
     }
 
     private void addCbLop() {
+        cb_lop.removeAllItems();
+        MonHoc mh = null;
+        NienKhoa nk = null;
+        if (monHocs.size() != 0) {
+            mh = monHocs.get(cb_monhoc.getSelectedIndex());
+        } else {
+            addTable();
+            return;
+        }
+        if (nienKhoas.size() != 0) {
+            nk = nienKhoas.get(cb_khoahoc.getSelectedIndex());
 
-        MonHoc mh = monHocs.get(cb_monhoc.getSelectedIndex());
-        NienKhoa nk = nienKhoas.get(cb_khoahoc.getSelectedIndex());
+        } else {
+            addTable();
+            return;
+
+        }
+        if (chuyenNganhs.size() == 0) {
+            addTable();
+            return;
+        }
         ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+        if (nk == null || chuyenNganh == null) {
+            addTable();
+            return;
+        }
         MonChuyenNganh mNganh = monNganhRepo.getMonChuyenNganh(mh.getId(), chuyenNganh.getId());
-        if (nk == null || mNganh == null) {
+        if (mNganh == null) {
+            addTable();
             return;
         }
         monKhoaHoc = monKhoaHocRepo.getMonKhoaHoc(mNganh.getId(), nk.getId());
-        if(monKhoaHoc==null){
+        if (monKhoaHoc == null) {
+            addTable();
             return;
         }
         System.out.println(" id mon khoa hoc " + monKhoaHoc.getIdMonKhoaHoc());
         lopMonHocs = lopMonHocRepo.getLopMonHocs(monKhoaHoc.getIdMonKhoaHoc());
-        cb_lop.removeAllItems();
         if (!lopMonHocs.isEmpty()) {
             for (int i = 0; i < lopMonHocs.size(); i++) {
                 cb_lop.addItem(lopMonHocs.get(i).getTenLop());
             }
         }
+        addTable();
+
     }
 
     private void addCbChuyenNganh() {
@@ -115,6 +161,19 @@ public class ViewMain extends javax.swing.JFrame {
 
     }
 
+    private void addTable() {
+        DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        if (lopMonHocs.isEmpty()) {
+            return;
+        }
+        sinhVienLopMHs = sinhVienLopRepo.getSVLopMonHoc(lopMonHocs.get(cb_lop.getSelectedIndex()).getIdLop());
+        for (int i = 0; i < sinhVienLopMHs.size(); i++) {
+            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi()});
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -127,7 +186,7 @@ public class ViewMain extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        table_diemsv = new javax.swing.JTable();
+        tbl_diemsv = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -144,7 +203,7 @@ public class ViewMain extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        table_diemsv.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_diemsv.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -170,15 +229,15 @@ public class ViewMain extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(table_diemsv);
-        if (table_diemsv.getColumnModel().getColumnCount() > 0) {
-            table_diemsv.getColumnModel().getColumn(0).setResizable(false);
-            table_diemsv.getColumnModel().getColumn(1).setResizable(false);
-            table_diemsv.getColumnModel().getColumn(2).setResizable(false);
-            table_diemsv.getColumnModel().getColumn(2).setHeaderValue("Điểm CC");
-            table_diemsv.getColumnModel().getColumn(3).setHeaderValue("Điểm giữa kì");
-            table_diemsv.getColumnModel().getColumn(4).setResizable(false);
-            table_diemsv.getColumnModel().getColumn(4).setHeaderValue("Điểm thi");
+        jScrollPane1.setViewportView(tbl_diemsv);
+        if (tbl_diemsv.getColumnModel().getColumnCount() > 0) {
+            tbl_diemsv.getColumnModel().getColumn(0).setResizable(false);
+            tbl_diemsv.getColumnModel().getColumn(1).setResizable(false);
+            tbl_diemsv.getColumnModel().getColumn(2).setResizable(false);
+            tbl_diemsv.getColumnModel().getColumn(2).setHeaderValue("Điểm CC");
+            tbl_diemsv.getColumnModel().getColumn(3).setHeaderValue("Điểm giữa kì");
+            tbl_diemsv.getColumnModel().getColumn(4).setResizable(false);
+            tbl_diemsv.getColumnModel().getColumn(4).setHeaderValue("Điểm thi");
         }
 
         jLabel1.setText("Chuyên ngành: ");
@@ -368,8 +427,7 @@ public class ViewMain extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_khoaMouseClicked
 
     private void cb_khoaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoaItemStateChanged
-        ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
-        nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganh.getId());
+
         addCbNienKhoa();
     }//GEN-LAST:event_cb_khoaItemStateChanged
 
@@ -378,11 +436,6 @@ public class ViewMain extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_khoahocItemStateChanged
 
     private void cb_khoahocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoahocMouseEntered
-        NienKhoa khoa = nienKhoas.get(cb_khoahoc.getSelectedIndex());
-        if(khoa==null){
-            return;
-        }
-        monHocs = monKhoaHocRepo.getMonKhoa(khoa.getId());
         addCbMonHoc();
     }//GEN-LAST:event_cb_khoahocMouseEntered
 
@@ -441,7 +494,7 @@ public class ViewMain extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable table_diemsv;
+    private javax.swing.JTable tbl_diemsv;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
