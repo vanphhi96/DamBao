@@ -53,23 +53,21 @@ public class LopMonHocRepository implements ILopMonHoc {
     }
 
     @Override
-    public List<LopMonHoc> getLopMonHocs(int idMonKhoaHoc) {
+    public List<LopMonHoc> getLopMonHocs(MonKhoaHoc monKhoaHoc) {
         List<LopMonHoc> hocs = new ArrayList<>();
-        String sql = "SELECT tblLopMonHoc.id, tblLopMonHoc.idMonKhoaHoc, tblLopMonHoc.phongHoc, tblLopMonHoc.soLuong, tblLopMonHoc.tenLop "
-                + "FROM tblLopMonHoc, tblMonKhoaHoc"
-                + " WHERE tblMonKhoaHoc.id = ?";
+        String sql = "SELECT * "
+                + "FROM tblLopMonHoc"
+                + " WHERE tblLopMonHoc.idMonKhoaHoc = ?";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);
-            stmt.setInt(1, idMonKhoaHoc);
+            stmt.setInt(1, monKhoaHoc.getIdMonKhoaHoc());
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 int id = rs.getInt("id");
                 String phongHoc = rs.getString("phongHoc");
                 String tenLop = rs.getString("tenLop");
                 int soLuong = rs.getInt("soLuong");
-                IMonKhoaHoc iMonKhoaHoc = new MonKhoaHocRepository();
-                MonKhoaHoc monKhoaHoc = iMonKhoaHoc.getByID(idMonKhoaHoc);
                 LopMonHoc lopMonHoc = new LopMonHoc(id, monKhoaHoc, soLuong, phongHoc, tenLop);
                 hocs.add(lopMonHoc);
             }

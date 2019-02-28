@@ -20,9 +20,8 @@ public class NienKhoa {
     private String nienKhoa;
     private String moTa;
 
-    public NienKhoa(int id, ChuyenNganh chuyenNganh, String nienKhoa, String mota) {
+    public NienKhoa(int id, String nienKhoa, String mota) {
         this.id = id;
-        this.chuyenNganh = chuyenNganh;
         this.nienKhoa = nienKhoa;
         this.moTa = mota;
     }

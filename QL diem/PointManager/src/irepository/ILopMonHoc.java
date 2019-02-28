@@ -7,6 +7,7 @@ package irepository;
 
 import java.util.List;
 import model.LopMonHoc;
+import model.MonKhoaHoc;
 
 /**
  *
@@ -14,7 +15,7 @@ import model.LopMonHoc;
  */
 public interface ILopMonHoc {
     LopMonHoc getByID(int idLopMonHoc);
-    List<LopMonHoc> getLopMonHocs(int idMonKhoaHoc);
+    List<LopMonHoc> getLopMonHocs(MonKhoaHoc monKhoaHoc);
     boolean addLopMonHoc(LopMonHoc lopMonHoc);
     boolean delete(int idLopMonHoc);
 }

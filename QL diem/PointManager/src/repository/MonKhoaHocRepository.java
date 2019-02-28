@@ -5,7 +5,6 @@
  */
 package repository;
 
-import irepository.IChuyenNganh;
 import irepository.IMonKhoaHoc;
 import irepository.IMonNganh;
 import irepository.INienKhoa;
@@ -16,7 +15,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import model.ChuyenNganh;
 import model.MonChuyenNganh;
 import model.MonHoc;
 import model.MonKhoaHoc;
@@ -58,22 +56,20 @@ public class MonKhoaHocRepository implements IMonKhoaHoc {
     }
 
     @Override
-    public MonKhoaHoc getMonKhoaHoc(int idMon, int idNienKhoa) {
+    public MonKhoaHoc getMonKhoaHoc(MonChuyenNganh monChuyenNganh, NienKhoa nienKhoa) {
         MonKhoaHoc monKhoaHoc = null;
         try {
             String sql = "SELECT * FROM tblMonKhoaHoc WHERE idMonChuyenNganh = ? AND idNienKhoa = ?";
             Connection connect = ConnectDB.getConnect();
             PreparedStatement stmt = connect.prepareStatement(sql);
-            stmt.setInt(1, idMon);
-            stmt.setInt(2, idNienKhoa);
+            stmt.setInt(1, monChuyenNganh.getId());
+            stmt.setInt(2, nienKhoa.getId());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int id = rs.getInt("id");
                 IMonNganh monNganhRepo = new MonNganhRepository();
                 INienKhoa nienKhoaRepo = new NienKhoaRepository();
-                MonChuyenNganh monNganh = monNganhRepo.getByID(idMon);
-                NienKhoa nienKhoa = nienKhoaRepo.getByID(idNienKhoa);
-                monKhoaHoc = new MonKhoaHoc(id, monNganh, nienKhoa);
+                monKhoaHoc = new MonKhoaHoc(id, monChuyenNganh, nienKhoa);
             }
             return monKhoaHoc;
         } catch (SQLException ex) {

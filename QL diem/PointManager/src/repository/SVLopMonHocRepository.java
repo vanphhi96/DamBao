@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.LopMonHoc;
 import model.SVLopMonHoc;
 import model.SinhVien;
@@ -44,7 +46,7 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
                 LopMonHoc lmh = lopMonHoc.getByID(idLop);
                 ISinhVien sinhVienRepo = new SinhVienRepository();
                 SinhVien sv = sinhVienRepo.getByID(id);
-                svLop = new SVLopMonHoc(sv, lmh, diemCC, diemGiuaKi, diemThi, diemGiuaKi);
+                svLop = new SVLopMonHoc(sv, lmh, diemCC, diemGiuaKi, diemThi);
 
             }
             stmt.close();
@@ -58,17 +60,28 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
 
     @Override
     public boolean update(SVLopMonHoc svLopMonHoc) {
+        Connection connect = ConnectDB.getConnect();
         try {
-            String sql = "UPDATE tblSVLopMonHoc SET diemChuyenCan = ?, diemGiuaKi = ?, diemThi = ? WHERE ";
-            Connection connect = ConnectDB.getConnect();
+            String sql = "UPDATE tblSVLopMonHoc SET diemChuyenCan = ?, diemGiuaKi = ?, diemThi = ? WHERE idSv = ? AND idLop = ?";
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setDouble(1, svLopMonHoc.getDiemCC());
             stmt.setDouble(2, svLopMonHoc.getDiemGiuaKi());
             stmt.setDouble(3, svLopMonHoc.getDiemThi());
-            return stmt.execute();
+            stmt.setDouble(4, svLopMonHoc.getSinhVien().getId());
+            stmt.setDouble(5, svLopMonHoc.getLop().getIdLop());
+            stmt.executeUpdate();
+            connect.commit();
+            System.out.println("commit");
+            return true;
 
         } catch (SQLException ex) {
-
+            try {
+                connect.rollback();
+                 return false;
+            } catch (SQLException ex1) {
+                Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+             System.out.println("rollback");
         }
         return false;
     }
@@ -91,7 +104,7 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
                 LopMonHoc lmh = lopMonHoc.getByID(idLopMonHoc);
                 ISinhVien sinhVienRepo = new SinhVienRepository();
                 SinhVien sv = sinhVienRepo.getByID(id);
-                SVLopMonHoc sVLopMonHoc = new SVLopMonHoc(sv, lmh, diemCC, diemGiuaKi, diemThi, diemGiuaKi);
+                SVLopMonHoc sVLopMonHoc = new SVLopMonHoc(sv, lmh, diemCC, diemGiuaKi, diemThi);
                 sVLopMonHocs.add(sVLopMonHoc);
             }
             stmt.close();

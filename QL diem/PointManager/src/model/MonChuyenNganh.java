@@ -23,6 +23,11 @@ public class MonChuyenNganh {
         this.monHoc = monHoc;
     }
 
+    public MonChuyenNganh(int id) {
+        this.id = id;
+    }
+    
+
     public int getId() {
         return id;
     }

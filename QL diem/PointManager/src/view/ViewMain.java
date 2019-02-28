@@ -13,8 +13,11 @@ import irepository.IMonNganh;
 import irepository.INienKhoa;
 import irepository.ISVLopMonHoc;
 import irepository.ISinhVien;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.ChuyenNganh;
 import model.LopMonHoc;
@@ -68,34 +71,39 @@ public class ViewMain extends javax.swing.JFrame {
     private void addCbMonHoc() {
         cb_monhoc.removeAllItems();
         cb_lop.removeAllItems();
-        if (!nienKhoas.isEmpty()) {
+        if (!nienKhoas.isEmpty() && cb_khoahoc.getSelectedIndex() != -1) {
             NienKhoa khoa = nienKhoas.get(cb_khoahoc.getSelectedIndex());
+            System.out.println("nien khoa: " + khoa.getNienKhoa());
             monHocs = monKhoaHocRepo.getMonKhoa(khoa.getId());
+            System.out.println("tes test");
             if (!monHocs.isEmpty()) {
                 for (int i = 0; i < monHocs.size(); i++) {
                     cb_monhoc.addItem(monHocs.get(i).getTenMonHoc());
                 }
-
             }
-            addCbLop();
+
         }
+        addCbLop();
 
     }
 
     private void addCbNienKhoa() {
         cb_khoahoc.removeAllItems();
         cb_monhoc.removeAllItems();
-        ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
-        if (chuyenNganh != null) {
-            nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganh.getId());
-            if (!nienKhoas.isEmpty()) {
-                for (int i = 0; i < nienKhoas.size(); i++) {
-                    cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
-                }
-                monHocs = monKhoaHocRepo.getMonKhoa(nienKhoas.get(0).getId());
+        if (!chuyenNganhs.isEmpty() || cb_khoa.getSelectedIndex() != -1) {
+            ChuyenNganh chuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+            if (chuyenNganh != null) {
+                nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganh.getId());
+                if (!nienKhoas.isEmpty()) {
+                    for (int i = 0; i < nienKhoas.size(); i++) {
+                        cb_khoahoc.addItem(nienKhoas.get(i).getNienKhoa());
+                    }
+                    monHocs = monKhoaHocRepo.getMonKhoa(nienKhoas.get(0).getId());
 
+                }
             }
         }
+
         addCbMonHoc();
 
     }
@@ -104,13 +112,13 @@ public class ViewMain extends javax.swing.JFrame {
         cb_lop.removeAllItems();
         MonHoc mh = null;
         NienKhoa nk = null;
-        if (monHocs.size() != 0) {
+        if (monHocs.size() != 0 && cb_monhoc.getSelectedIndex() != -1) {
             mh = monHocs.get(cb_monhoc.getSelectedIndex());
         } else {
             addTable();
             return;
         }
-        if (nienKhoas.size() != 0) {
+        if (nienKhoas.size() != 0 && cb_khoahoc.getSelectedIndex() != -1) {
             nk = nienKhoas.get(cb_khoahoc.getSelectedIndex());
 
         } else {
@@ -118,7 +126,7 @@ public class ViewMain extends javax.swing.JFrame {
             return;
 
         }
-        if (chuyenNganhs.size() == 0) {
+        if (chuyenNganhs.size() == 0 || cb_khoa.getSelectedIndex() == -1) {
             addTable();
             return;
         }
@@ -127,18 +135,17 @@ public class ViewMain extends javax.swing.JFrame {
             addTable();
             return;
         }
-        MonChuyenNganh mNganh = monNganhRepo.getMonChuyenNganh(mh.getId(), chuyenNganh.getId());
+        MonChuyenNganh mNganh = monNganhRepo.getMonChuyenNganh(mh, chuyenNganh);
         if (mNganh == null) {
             addTable();
             return;
         }
-        monKhoaHoc = monKhoaHocRepo.getMonKhoaHoc(mNganh.getId(), nk.getId());
+        monKhoaHoc = monKhoaHocRepo.getMonKhoaHoc(mNganh, nk);
         if (monKhoaHoc == null) {
             addTable();
             return;
         }
-        System.out.println(" id mon khoa hoc " + monKhoaHoc.getIdMonKhoaHoc());
-        lopMonHocs = lopMonHocRepo.getLopMonHocs(monKhoaHoc.getIdMonKhoaHoc());
+        lopMonHocs = lopMonHocRepo.getLopMonHocs(monKhoaHoc);
         if (!lopMonHocs.isEmpty()) {
             for (int i = 0; i < lopMonHocs.size(); i++) {
                 cb_lop.addItem(lopMonHocs.get(i).getTenLop());
@@ -158,20 +165,39 @@ public class ViewMain extends javax.swing.JFrame {
             nienKhoas = nienKhoaRepo.getNienKhoas(chuyenNganhs.get(0).getId());
             addCbNienKhoa();
         }
-
     }
 
     private void addTable() {
         DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
         model.getDataVector().removeAllElements();
         model.fireTableDataChanged();
-        if (lopMonHocs.isEmpty()) {
+        if (lopMonHocs.isEmpty() || cb_lop.getSelectedIndex() == -1) {
             return;
         }
         sinhVienLopMHs = sinhVienLopRepo.getSVLopMonHoc(lopMonHocs.get(cb_lop.getSelectedIndex()).getIdLop());
         for (int i = 0; i < sinhVienLopMHs.size(); i++) {
             model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi()});
         }
+    }
+
+    private List<SVLopMonHoc> getDataTable() {
+        DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
+        List<SVLopMonHoc> editDiems = new ArrayList<>();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            for (int j = 0; j < sinhVienLopMHs.size(); j++) {
+                if ((model.getValueAt(i, 0).toString()).equals(Integer.toString(sinhVienLopMHs.get(j).getSinhVien().getId()))) {
+                    double diemCC = (double) model.getValueAt(i, 2);
+                    double diemGiuaKi = (double) model.getValueAt(i, 3);
+                    double diemThi = (double) model.getValueAt(i, 4);
+                    if (diemCC != sinhVienLopMHs.get(j).getDiemCC() || diemGiuaKi != sinhVienLopMHs.get(j).getDiemGiuaKi() || diemThi != sinhVienLopMHs.get(j).getDiemThi()) {
+                        SVLopMonHoc svlmh = new SVLopMonHoc(sinhVienLopMHs.get(j).getSinhVien(), sinhVienLopMHs.get(j).getLop(), diemCC, diemGiuaKi, diemThi);
+                        editDiems.add(svlmh);
+                    }
+
+                }
+            }
+        }
+        return editDiems;
     }
 
     /**
@@ -194,7 +220,7 @@ public class ViewMain extends javax.swing.JFrame {
         btnSearch = new javax.swing.JButton();
         txtSearch = new javax.swing.JTextField();
         btnSearch1 = new javax.swing.JButton();
-        btnSearch2 = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
         cb_khoa = new javax.swing.JComboBox();
         cb_khoahoc = new javax.swing.JComboBox();
         cb_monhoc = new javax.swing.JComboBox();
@@ -266,11 +292,11 @@ public class ViewMain extends javax.swing.JFrame {
             }
         });
 
-        btnSearch2.setText("Lưu thay đổi");
-        btnSearch2.setActionCommand("btnSearch");
-        btnSearch2.addActionListener(new java.awt.event.ActionListener() {
+        btnSave.setText("Lưu thay đổi");
+        btnSave.setActionCommand("btnSearch");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearch2ActionPerformed(evt);
+                btnSaveActionPerformed(evt);
             }
         });
 
@@ -304,9 +330,25 @@ public class ViewMain extends javax.swing.JFrame {
             }
         });
 
+        cb_monhoc.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_monhocItemStateChanged(evt);
+            }
+        });
         cb_monhoc.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 cb_monhocMouseEntered(evt);
+            }
+        });
+
+        cb_lop.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_lopItemStateChanged(evt);
+            }
+        });
+        cb_lop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cb_lopMouseEntered(evt);
             }
         });
 
@@ -332,7 +374,7 @@ public class ViewMain extends javax.swing.JFrame {
                                 .addComponent(cb_khoahoc, 0, 85, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(btnSearch, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnSearch2, javax.swing.GroupLayout.Alignment.LEADING)))
+                                .addComponent(btnSave, javax.swing.GroupLayout.Alignment.LEADING)))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -364,7 +406,7 @@ public class ViewMain extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSearch1)
-                    .addComponent(btnSearch2))
+                    .addComponent(btnSave))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(59, 59, 59))
@@ -410,9 +452,17 @@ public class ViewMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSearchActionPerformed
 
-    private void btnSearch2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearch2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSearch2ActionPerformed
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        List<SVLopMonHoc> diems = getDataTable();
+        boolean result = false;
+        int fail = 0;
+        int success = 0;
+        for (SVLopMonHoc diem : diems) {
+            result = sinhVienLopRepo.update(diem);
+        }
+        addTable();
+        JOptionPane.showMessageDialog(this, "Success "+success+"\n Fail: "+fail+" "+diems.size());
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     private void cb_khoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_khoaActionPerformed
         // TODO add your handling code here:
@@ -432,16 +482,28 @@ public class ViewMain extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_khoaItemStateChanged
 
     private void cb_khoahocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoahocItemStateChanged
-
+        addCbMonHoc();
     }//GEN-LAST:event_cb_khoahocItemStateChanged
 
     private void cb_khoahocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoahocMouseEntered
-        addCbMonHoc();
+
     }//GEN-LAST:event_cb_khoahocMouseEntered
 
     private void cb_monhocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_monhocMouseEntered
-        addCbLop();
+
     }//GEN-LAST:event_cb_monhocMouseEntered
+
+    private void cb_lopMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_lopMouseEntered
+        // addTable();
+    }//GEN-LAST:event_cb_lopMouseEntered
+
+    private void cb_monhocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_monhocItemStateChanged
+        addCbLop();
+    }//GEN-LAST:event_cb_monhocItemStateChanged
+
+    private void cb_lopItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_lopItemStateChanged
+        addTable();
+    }//GEN-LAST:event_cb_lopItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -479,9 +541,9 @@ public class ViewMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnSearch1;
-    private javax.swing.JButton btnSearch2;
     private javax.swing.JComboBox cb_khoa;
     private javax.swing.JComboBox cb_khoahoc;
     private javax.swing.JComboBox cb_lop;

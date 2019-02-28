@@ -6,8 +6,10 @@
 package irepository;
 
 import java.util.List;
+import model.MonChuyenNganh;
 import model.MonHoc;
 import model.MonKhoaHoc;
+import model.NienKhoa;
 
 /**
  *
@@ -15,7 +17,7 @@ import model.MonKhoaHoc;
  */
 public interface IMonKhoaHoc {
     List<MonHoc> getMonKhoa(int idNienKhoa);
-    MonKhoaHoc getMonKhoaHoc(int idMon, int idNienKhoa);
+    MonKhoaHoc getMonKhoaHoc(MonChuyenNganh monChuyenNganh, NienKhoa nienKhoa);
     MonKhoaHoc getByID(int idMonKhoaHoc);
     boolean addMonKhoaHoc(MonKhoaHoc monKhoaHoc);
     boolean delete(int idMonKhoaHoc);

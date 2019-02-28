@@ -10,23 +10,23 @@ package model;
  * @author vanph
  */
 public class SVLopMonHoc {
+
     private SinhVien sinhVien;
     private LopMonHoc lop;
-    private double diemCC;
-    private double diemGiuaKi;
-    private double diemThi;
-    private double diemCuoiKi;
+    private double diemCC = 0;
+    private double diemGiuaKi = 0;
+    private double diemThi = 0;
+    private double diemCuoiKi = 0;
 
     public SVLopMonHoc() {
     }
 
-    public SVLopMonHoc(SinhVien sinhVien, LopMonHoc lop, double diemCC, double diemGiuaKi, double diemThi, double diemCuoiKi) {
+    public SVLopMonHoc(SinhVien sinhVien, LopMonHoc lop, double diemCC, double diemGiuaKi, double diemThi) {
         this.sinhVien = sinhVien;
         this.lop = lop;
         this.diemCC = diemCC;
         this.diemGiuaKi = diemGiuaKi;
         this.diemThi = diemThi;
-        this.diemCuoiKi = diemCuoiKi;
     }
 
     public SinhVien getSinhVien() {
@@ -76,5 +76,5 @@ public class SVLopMonHoc {
     public void setDiemCuoiKi(double diemCuoiKi) {
         this.diemCuoiKi = diemCuoiKi;
     }
-    
+
 }

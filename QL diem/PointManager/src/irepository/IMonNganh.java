@@ -6,6 +6,7 @@
 package irepository;
 
 import java.util.List;
+import model.ChuyenNganh;
 import model.MonChuyenNganh;
 import model.MonHoc;
 
@@ -14,7 +15,7 @@ import model.MonHoc;
  * @author vanph
  */
 public interface IMonNganh {
-    MonChuyenNganh getMonChuyenNganh(int idMon, int idChuyenNganh);
+    MonChuyenNganh getMonChuyenNganh(MonHoc monHoc, ChuyenNganh chuyenNganh);
     MonChuyenNganh getByID(int id);
     List<MonHoc> getMonNganhs(int idNganh);
     boolean addMonNganh(MonChuyenNganh monChuyenNganh);

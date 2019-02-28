@@ -28,23 +28,18 @@ import util.ConnectDB;
 public class MonNganhRepository implements IMonNganh {
 
     @Override
-    public MonChuyenNganh getMonChuyenNganh(int idMon, int idChuyenNganh) {
+    public MonChuyenNganh getMonChuyenNganh(MonHoc monHoc, ChuyenNganh chuyenNganh) {
         MonChuyenNganh monChuyenNganh = null;
         String sql = "SELECT * FROM tblMonNganh WHERE idMon = ? AND idChuyenNganh = ?";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);
-            stmt.setInt(1, idMon);
-            stmt.setInt(2, idChuyenNganh);
+            stmt.setInt(1, monHoc.getId());
+            stmt.setInt(2, chuyenNganh.getId());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                IMonHoc monHocRepo = new MonHocRepository();
-                IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
                 int id = rs.getInt("id");
-                MonHoc mh = monHocRepo.getMHByID(idMon);
-                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(idChuyenNganh);
-                monChuyenNganh = new MonChuyenNganh(id,  chuyenNganh,mh);
-                
+                monChuyenNganh = new MonChuyenNganh(id, chuyenNganh, monHoc);
             }
             return monChuyenNganh;
         } catch (SQLException ex) {
@@ -63,11 +58,11 @@ public class MonNganhRepository implements IMonNganh {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
-                IMonHoc monHocRepo = new MonHocRepository();
-                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(rs.getInt("idChuyenNganh"));
-                MonHoc monHoc = monHocRepo.getMHByID(rs.getInt("idMon"));
-                monChuyenNganh = new MonChuyenNganh(id, chuyenNganh, monHoc);
+//                IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
+//                IMonHoc monHocRepo = new MonHocRepository();
+//                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(rs.getInt("idChuyenNganh"));
+//                MonHoc monHoc = monHocRepo.getMHByID(rs.getInt("idMon"));
+                monChuyenNganh = new MonChuyenNganh(id);
                 rs.close();
                 stmt.close();
             } else {
@@ -82,7 +77,9 @@ public class MonNganhRepository implements IMonNganh {
     @Override
     public List<MonHoc> getMonNganhs(int idNganh) {
         List<MonHoc> monHocs = new ArrayList<>();
-        String sql = "SELECT idMon FROM tblMonChuyenNganh WHERE idNganh = ?";
+        String sql = "SELECT tblMonHoc.id, tblMonHoc.moTa, tblMonHoc.soTinChi, tblMonHoc.tenMonHoc\n"
+                + " FROM tblMonNganh, tblMonHoc \n"
+                + " WHERE idChuyenNganh = ? AND tblMonNganh.idMon = tblMonHoc.id";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);
@@ -90,8 +87,10 @@ public class MonNganhRepository implements IMonNganh {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int idMon = rs.getInt("idMon");
-                IMonHoc iMonHoc = new MonHocRepository();
-                MonHoc mh = iMonHoc.getMHByID(idMon);
+                int soTinChi = rs.getInt("soTinChi");
+                String moTa = rs.getString("moTa");
+                String tenMonHoc = rs.getString("tenMonHoc");
+                MonHoc mh = new MonHoc(idMon, tenMonHoc, soTinChi, moTa);
                 monHocs.add(mh);
             }
 

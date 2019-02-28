@@ -11,10 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import model.ChuyenNganh;
 import model.NienKhoa;
 import util.ConnectDB;
@@ -40,8 +38,7 @@ public class NienKhoaRepository implements INienKhoa {
                 int idChuyenNganh = rs.getInt("idChuyenNganh");
                 String ten = rs.getString("nienKhoa");
                 String mota = rs.getString("moTa");
-                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(idChuyenNganh);
-                nienKhoa = new NienKhoa(idNienKhoa, chuyenNganh, ten, mota);
+                nienKhoa = new NienKhoa(idNienKhoa, ten, mota);
 
             }
 
@@ -66,8 +63,7 @@ public class NienKhoaRepository implements INienKhoa {
                 String ten = rs.getString("nienKhoa");
                 System.out.println(ten);
                 String mota = rs.getString("moTa");
-                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(idChuyenNganh);
-                NienKhoa nienKhoa = new NienKhoa(id, chuyenNganh, ten, mota);
+                NienKhoa nienKhoa = new NienKhoa(id, ten, mota);
                 nienKhoas.add(nienKhoa);
             }
 
