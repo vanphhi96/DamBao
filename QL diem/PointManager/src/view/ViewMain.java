@@ -58,6 +58,8 @@ public class ViewMain extends javax.swing.JFrame {
     private List<SinhVien> sinhViens = new ArrayList<>();
     private List<SVLopMonHoc> sinhVienLopMHs = new ArrayList<>();
     private MonKhoaHoc monKhoaHoc = null;
+    public static ChuyenNganh sChuyenNganh;
+    public static MonHoc sMonHoc;
 
     /**
      * Creates new form ViewMain
@@ -176,7 +178,8 @@ public class ViewMain extends javax.swing.JFrame {
         }
         sinhVienLopMHs = sinhVienLopRepo.getSVLopMonHoc(lopMonHocs.get(cb_lop.getSelectedIndex()).getIdLop());
         for (int i = 0; i < sinhVienLopMHs.size(); i++) {
-            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi()});
+            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC()
+                    , sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(),sinhVienLopMHs.get(i).getGhiChu()});
         }
     }
 
@@ -189,8 +192,15 @@ public class ViewMain extends javax.swing.JFrame {
                     double diemCC = (double) model.getValueAt(i, 2);
                     double diemGiuaKi = (double) model.getValueAt(i, 3);
                     double diemThi = (double) model.getValueAt(i, 4);
-                    if (diemCC != sinhVienLopMHs.get(j).getDiemCC() || diemGiuaKi != sinhVienLopMHs.get(j).getDiemGiuaKi() || diemThi != sinhVienLopMHs.get(j).getDiemThi()) {
-                        SVLopMonHoc svlmh = new SVLopMonHoc(sinhVienLopMHs.get(j).getSinhVien(), sinhVienLopMHs.get(j).getLop(), diemCC, diemGiuaKi, diemThi);
+                    String ghiChu = (String)model.getValueAt(i, 5);
+                    if(ghiChu==null){
+                        ghiChu =" ";
+                    }
+                    System.out.println("ghi chu test: "+ghiChu);
+                    
+                    if (diemCC != sinhVienLopMHs.get(j).getDiemCC() || diemGiuaKi != sinhVienLopMHs.get(j).getDiemGiuaKi() 
+                            || diemThi != sinhVienLopMHs.get(j).getDiemThi() || !ghiChu.equals(sinhVienLopMHs.get(j).getGhiChu())) {
+                        SVLopMonHoc svlmh = new SVLopMonHoc(sinhVienLopMHs.get(j).getSinhVien(), sinhVienLopMHs.get(j).getLop(), diemCC, diemGiuaKi, diemThi, ghiChu);
                         editDiems.add(svlmh);
                     }
 
@@ -231,20 +241,17 @@ public class ViewMain extends javax.swing.JFrame {
 
         tbl_diemsv.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Mã SV", "Tên SV", "Điểm CC", "Điểm giữa kì", "Điểm thi"
+                "Mã SV", "Tên SV", "Điểm CC", "Điểm giữa kì", "Điểm thi", "Ghi Chú"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Float.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, false
+                false, false, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -260,10 +267,9 @@ public class ViewMain extends javax.swing.JFrame {
             tbl_diemsv.getColumnModel().getColumn(0).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(1).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(2).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(2).setHeaderValue("Điểm CC");
-            tbl_diemsv.getColumnModel().getColumn(3).setHeaderValue("Điểm giữa kì");
+            tbl_diemsv.getColumnModel().getColumn(3).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(4).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(4).setHeaderValue("Điểm thi");
+            tbl_diemsv.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jLabel1.setText("Chuyên ngành: ");
@@ -445,23 +451,38 @@ public class ViewMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearch1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearch1ActionPerformed
-        // TODO add your handling code here:
+        if (!lopMonHocs.isEmpty()) {
+            AddStudent addStudent = new AddStudent();
+            sChuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+            sMonHoc = monHocs.get(cb_monhoc.getSelectedIndex());
+            addStudent.show();
+        } else if (!cb_monhoc.getSelectedItem().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không có lớp cho môn " + cb_monhoc.getSelectedItem().toString());
+        } else {
+
+        }
     }//GEN-LAST:event_btnSearch1ActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        String name = txtSearch.getText();
+        for (int i = 0; i < sinhVienLopMHs.size(); i++) {
+            if (sinhVienLopMHs.get(i).getSinhVien().getTenSV().contains(name)) {
+                model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(),
+                    sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(),sinhVienLopMHs.get(i).getGhiChu()});
+            }
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         List<SVLopMonHoc> diems = getDataTable();
-        boolean result = false;
-        int fail = 0;
-        int success = 0;
         for (SVLopMonHoc diem : diems) {
-            result = sinhVienLopRepo.update(diem);
+            sinhVienLopRepo.update(diem);
         }
         addTable();
-        JOptionPane.showMessageDialog(this, "Success "+success+"\n Fail: "+fail+" "+diems.size());
+        JOptionPane.showMessageDialog(this, "Success!");
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void cb_khoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_khoaActionPerformed

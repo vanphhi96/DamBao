@@ -17,20 +17,30 @@ public class SVLopMonHoc {
     private double diemGiuaKi = 0;
     private double diemThi = 0;
     private double diemCuoiKi = 0;
+    private String ghiChu = " ";
 
     public SVLopMonHoc() {
     }
 
-    public SVLopMonHoc(SinhVien sinhVien, LopMonHoc lop, double diemCC, double diemGiuaKi, double diemThi) {
+    public SVLopMonHoc(SinhVien sinhVien, LopMonHoc lop, double diemCC, double diemGiuaKi, double diemThi, String ghiChu) {
         this.sinhVien = sinhVien;
         this.lop = lop;
         this.diemCC = diemCC;
         this.diemGiuaKi = diemGiuaKi;
         this.diemThi = diemThi;
+        this.ghiChu = ghiChu;
     }
 
     public SinhVien getSinhVien() {
         return sinhVien;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
     }
 
     public LopMonHoc getLop() {
