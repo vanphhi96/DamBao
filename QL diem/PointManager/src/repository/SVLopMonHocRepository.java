@@ -63,7 +63,7 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
     public boolean update(SVLopMonHoc svLopMonHoc) {
         Connection connect = ConnectDB.getConnect();
         try {
-            System.out.println("Phi dai ca: "+svLopMonHoc.getGhiChu());
+            System.out.println("Phi dai ca: " + svLopMonHoc.getGhiChu());
             String sql = "UPDATE tblSVLopMonHoc SET diemChuyenCan = ?, diemGiuaKi = ?, diemThi = ?, ghiChu = ? WHERE idSv = ? AND idLop = ?";
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setDouble(1, svLopMonHoc.getDiemCC());
@@ -119,6 +119,62 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
 
         }
         return sVLopMonHocs;
+    }
+
+    @Override
+    public boolean addSvLopMonHoc(SVLopMonHoc svLopMonHoc) {
+        Connection connect = ConnectDB.getConnect();
+        try {
+            String sql = "INSERT INTO tblSVLopMonHoc (idSv, idLop, diemChuyenCan,diemGiuaKi,diemThi, ghiChu) VALUES(?,?,?,?,?,?)";
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, svLopMonHoc.getSinhVien().getId());
+            stmt.setInt(2, svLopMonHoc.getLop().getIdLop());
+            stmt.setDouble(3, svLopMonHoc.getDiemCC());
+            stmt.setDouble(4, svLopMonHoc.getDiemGiuaKi());
+            stmt.setDouble(5, svLopMonHoc.getDiemThi());
+            stmt.setString(6, svLopMonHoc.getGhiChu());
+            stmt.execute();
+            connect.setAutoCommit(false);
+            connect.commit();
+            System.out.println("add success!");
+            return true;
+
+        } catch (SQLException ex) {
+            try {
+                connect.rollback();
+                return false;
+            } catch (SQLException ex1) {
+                Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            System.out.println("rollback add fail");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delete(SVLopMonHoc sVLopMonHoc) {
+         Connection connect = ConnectDB.getConnect();
+        try {
+            String sql = "DELETE tblSVLopMonHoc WHERE idSv = ? AND idLop = ?";
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, sVLopMonHoc.getSinhVien().getId());
+            stmt.setInt(2, sVLopMonHoc.getLop().getIdLop());
+            stmt.executeQuery();
+            connect.setAutoCommit(false);
+            connect.commit();
+            System.out.println("commit");
+            return true;
+
+        } catch (SQLException ex) {
+            try {
+                connect.rollback();
+                return false;
+            } catch (SQLException ex1) {
+                Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            System.out.println("rollback");
+        }
+        return false;
     }
 
 }

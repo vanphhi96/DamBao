@@ -5,18 +5,45 @@
  */
 package view;
 
+import irepository.ISinhVien;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import model.SinhVien;
+import repository.SinhVienRepository;
+
 /**
  *
  * @author vanph
  */
 public class AddStudent extends javax.swing.JFrame {
 
+    private List<SinhVien> sinhViens = new ArrayList<>();
+    private ISinhVien iSinhVienRepo = new SinhVienRepository();
     /**
      * Creates new form AddStudent
      */
     public AddStudent() {
         initComponents();
-        tv_title.setText("");
+        addNienKhoa();
+        tv_title.setText("Chuyên ngành: "+ViewMain.sChuyenNganh.getTenChuyenNganh()+"   Môn:"+ViewMain.sMonHoc.getTenMonHoc());
+        //sinhViens = iSinhVienRepo.getByIdNienKhoa(ViewMain.nienKhoas)
+    }
+
+    private void addNienKhoa(){
+        cb_nienkhoa_add.removeAllItems();;
+        for(int i=0; i<ViewMain.nienKhoas.size(); i++){
+            cb_nienkhoa_add.addItem(ViewMain.nienKhoas.get(i).getNienKhoa());
+        }
+    }
+    private void addTable() {
+        DefaultTableModel model = (DefaultTableModel) tblSv.getModel();
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        sinhViens = iSinhVienRepo.getByIdNienKhoa(ViewMain.nienKhoas.get(cb_nienkhoa_add.getSelectedIndex()));
+        for (int i = 0; i < sinhViens.size(); i++) {
+            model.addRow(new Object[]{sinhViens.get(i).getTenSV(),sinhViens.get(i).getNgaySinh(), sinhViens.get(i).getQueQuan(), 0 });
+        }
     }
 
     /**
@@ -29,7 +56,7 @@ public class AddStudent extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblSv = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         cb_nienkhoa_add = new javax.swing.JComboBox();
         tv_title = new javax.swing.JLabel();
@@ -38,7 +65,7 @@ public class AddStudent extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblSv.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -61,9 +88,15 @@ public class AddStudent extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblSv);
 
         jButton1.setText("Tìm kiếm");
+
+        cb_nienkhoa_add.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_nienkhoa_addItemStateChanged(evt);
+            }
+        });
 
         tv_title.setText("Title");
 
@@ -114,6 +147,10 @@ public class AddStudent extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cb_nienkhoa_addItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_nienkhoa_addItemStateChanged
+      addTable();
+    }//GEN-LAST:event_cb_nienkhoa_addItemStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -154,8 +191,8 @@ public class AddStudent extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tblSv;
     private javax.swing.JLabel tv_title;
     // End of variables declaration//GEN-END:variables
 }

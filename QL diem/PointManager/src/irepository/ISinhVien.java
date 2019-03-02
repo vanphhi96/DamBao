@@ -6,6 +6,7 @@
 package irepository;
 
 import java.util.List;
+import model.NienKhoa;
 import model.SinhVien;
 
 /**
@@ -17,5 +18,6 @@ public interface ISinhVien {
     List<SinhVien> getAll();
     boolean addSinhVien(SinhVien sinhVien);
     boolean delete(int idSV);
+    List<SinhVien> getByIdNienKhoa(NienKhoa nienKhoa);
     
 }

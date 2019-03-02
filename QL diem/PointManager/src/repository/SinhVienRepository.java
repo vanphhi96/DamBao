@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import model.NienKhoa;
 import model.SinhVien;
@@ -39,7 +40,7 @@ public class SinhVienRepository implements ISinhVien {
                 String queQuan = rs.getString("queQuan");
                 INienKhoa nienKhoaRepo = new NienKhoaRepository();
                 NienKhoa nienKhoa = nienKhoaRepo.getByID(idKhoaHoc);
-                sv = new SinhVien(idSV, tenSv, ngaySinh, queQuan, nienKhoa);
+                sv = new SinhVien(idSV, tenSv, ngaySinh, queQuan, nienKhoa, queQuan);
                 stmt.close();
                 rs.close();
 
@@ -63,6 +64,32 @@ public class SinhVienRepository implements ISinhVien {
     @Override
     public boolean delete(int idSV) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<SinhVien> getByIdNienKhoa(NienKhoa nienKhoa) {
+        List<SinhVien> sinhViens = new ArrayList<>();
+        String sql = "SELECT * FROM tblSinhVien WHERE idKhoaHoc = ?";
+        Connection connect = ConnectDB.getConnect();
+        try {
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, nienKhoa.getId());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int idSV = rs.getInt("id");
+                String tenSv = rs.getString("tenSV");
+                Date ngaySinh = rs.getDate("ngaySinh");
+                String queQuan = rs.getString("queQuan");
+                SinhVien sv = new SinhVien(idSV, tenSv, ngaySinh, queQuan, nienKhoa, queQuan);
+                stmt.close();
+                rs.close();
+                sinhViens.add(sv);
+
+            }
+        } catch (SQLException ex) {
+
+        }
+        return sinhViens;
     }
 
 }

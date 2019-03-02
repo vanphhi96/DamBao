@@ -19,16 +19,27 @@ public class SinhVien {
     private Date ngaySinh;
     private String mota;
     private NienKhoa nienKhoa;
+    private String queQuan;
     private List<SVLopMonHoc> svLopMonHocs = new ArrayList<>();
     public SinhVien() {
     }
 
-    public SinhVien(int id, String tenSV, Date ngaySinh, String mota, NienKhoa nienKhoa) {
+    public SinhVien(int id, String tenSV, Date ngaySinh, String mota,
+            NienKhoa nienKhoa, String queQuan) {
         this.id = id;
         this.tenSV = tenSV;
         this.ngaySinh = ngaySinh;
         this.mota = mota;
         this.nienKhoa = nienKhoa;
+        this.queQuan = queQuan;
+    }
+
+    public String getQueQuan() {
+        return queQuan;
+    }
+
+    public void setQueQuan(String queQuan) {
+        this.queQuan = queQuan;
     }
     
     public List<SVLopMonHoc> getSvLopMonHocs() {

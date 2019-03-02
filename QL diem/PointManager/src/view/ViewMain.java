@@ -53,13 +53,14 @@ public class ViewMain extends javax.swing.JFrame {
     private List<LopMonHoc> lopMonHocs = new ArrayList<>();
     private List<MonHoc> monHocs = new ArrayList<MonHoc>();
     private List<ChuyenNganh> chuyenNganhs = new ArrayList();
-    private List<NienKhoa> nienKhoas = new ArrayList<>();
+    public static List<NienKhoa> nienKhoas = new ArrayList<>();
     private List<MonKhoaHoc> monKhoaHocs = new ArrayList<MonKhoaHoc>();
     private List<SinhVien> sinhViens = new ArrayList<>();
     private List<SVLopMonHoc> sinhVienLopMHs = new ArrayList<>();
     private MonKhoaHoc monKhoaHoc = null;
     public static ChuyenNganh sChuyenNganh;
     public static MonHoc sMonHoc;
+    public static LopMonHoc sLopMonHoc;
 
     /**
      * Creates new form ViewMain
@@ -178,8 +179,7 @@ public class ViewMain extends javax.swing.JFrame {
         }
         sinhVienLopMHs = sinhVienLopRepo.getSVLopMonHoc(lopMonHocs.get(cb_lop.getSelectedIndex()).getIdLop());
         for (int i = 0; i < sinhVienLopMHs.size(); i++) {
-            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC()
-                    , sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(),sinhVienLopMHs.get(i).getGhiChu()});
+            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(), sinhVienLopMHs.get(i).getGhiChu()});
         }
     }
 
@@ -192,13 +192,13 @@ public class ViewMain extends javax.swing.JFrame {
                     double diemCC = (double) model.getValueAt(i, 2);
                     double diemGiuaKi = (double) model.getValueAt(i, 3);
                     double diemThi = (double) model.getValueAt(i, 4);
-                    String ghiChu = (String)model.getValueAt(i, 5);
-                    if(ghiChu==null){
-                        ghiChu =" ";
+                    String ghiChu = (String) model.getValueAt(i, 5);
+                    if (ghiChu == null) {
+                        ghiChu = " ";
                     }
-                    System.out.println("ghi chu test: "+ghiChu);
-                    
-                    if (diemCC != sinhVienLopMHs.get(j).getDiemCC() || diemGiuaKi != sinhVienLopMHs.get(j).getDiemGiuaKi() 
+                    System.out.println("ghi chu test: " + ghiChu);
+
+                    if (diemCC != sinhVienLopMHs.get(j).getDiemCC() || diemGiuaKi != sinhVienLopMHs.get(j).getDiemGiuaKi()
                             || diemThi != sinhVienLopMHs.get(j).getDiemThi() || !ghiChu.equals(sinhVienLopMHs.get(j).getGhiChu())) {
                         SVLopMonHoc svlmh = new SVLopMonHoc(sinhVienLopMHs.get(j).getSinhVien(), sinhVienLopMHs.get(j).getLop(), diemCC, diemGiuaKi, diemThi, ghiChu);
                         editDiems.add(svlmh);
@@ -235,7 +235,6 @@ public class ViewMain extends javax.swing.JFrame {
         cb_khoahoc = new javax.swing.JComboBox();
         cb_monhoc = new javax.swing.JComboBox();
         cb_lop = new javax.swing.JComboBox();
-        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -244,14 +243,14 @@ public class ViewMain extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Mã SV", "Tên SV", "Điểm CC", "Điểm giữa kì", "Điểm thi", "Ghi Chú"
+                "Mã SV", "Tên SV", "Điểm CC", "Điểm giữa kì", "Điểm thi"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Float.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, true, true
+                false, false, true, true, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -262,6 +261,11 @@ public class ViewMain extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tbl_diemsv.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tbl_diemsvKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbl_diemsv);
         if (tbl_diemsv.getColumnModel().getColumnCount() > 0) {
             tbl_diemsv.getColumnModel().getColumn(0).setResizable(false);
@@ -269,7 +273,6 @@ public class ViewMain extends javax.swing.JFrame {
             tbl_diemsv.getColumnModel().getColumn(2).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(3).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(4).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jLabel1.setText("Chuyên ngành: ");
@@ -420,19 +423,6 @@ public class ViewMain extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Quản lý điểm", jPanel1);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 769, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 453, Short.MAX_VALUE)
-        );
-
-        jTabbedPane1.addTab("Môn học", jPanel3);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -450,40 +440,29 @@ public class ViewMain extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSearch1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearch1ActionPerformed
-        if (!lopMonHocs.isEmpty()) {
-            AddStudent addStudent = new AddStudent();
-            sChuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
-            sMonHoc = monHocs.get(cb_monhoc.getSelectedIndex());
-            addStudent.show();
-        } else if (!cb_monhoc.getSelectedItem().toString().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không có lớp cho môn " + cb_monhoc.getSelectedItem().toString());
-        } else {
+    private void cb_lopMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_lopMouseEntered
+        // addTable();
+    }//GEN-LAST:event_cb_lopMouseEntered
 
-        }
-    }//GEN-LAST:event_btnSearch1ActionPerformed
-
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
-        model.getDataVector().removeAllElements();
-        model.fireTableDataChanged();
-        String name = txtSearch.getText();
-        for (int i = 0; i < sinhVienLopMHs.size(); i++) {
-            if (sinhVienLopMHs.get(i).getSinhVien().getTenSV().contains(name)) {
-                model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(),
-                    sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(),sinhVienLopMHs.get(i).getGhiChu()});
-            }
-        }
-    }//GEN-LAST:event_btnSearchActionPerformed
-
-    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        List<SVLopMonHoc> diems = getDataTable();
-        for (SVLopMonHoc diem : diems) {
-            sinhVienLopRepo.update(diem);
-        }
+    private void cb_lopItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_lopItemStateChanged
         addTable();
-        JOptionPane.showMessageDialog(this, "Success!");
-    }//GEN-LAST:event_btnSaveActionPerformed
+    }//GEN-LAST:event_cb_lopItemStateChanged
+
+    private void cb_monhocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_monhocMouseEntered
+
+    }//GEN-LAST:event_cb_monhocMouseEntered
+
+    private void cb_monhocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_monhocItemStateChanged
+        addCbLop();
+    }//GEN-LAST:event_cb_monhocItemStateChanged
+
+    private void cb_khoahocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoahocMouseEntered
+
+    }//GEN-LAST:event_cb_khoahocMouseEntered
+
+    private void cb_khoahocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoahocItemStateChanged
+        addCbMonHoc();
+    }//GEN-LAST:event_cb_khoahocItemStateChanged
 
     private void cb_khoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_khoaActionPerformed
         // TODO add your handling code here:
@@ -502,29 +481,62 @@ public class ViewMain extends javax.swing.JFrame {
         addCbNienKhoa();
     }//GEN-LAST:event_cb_khoaItemStateChanged
 
-    private void cb_khoahocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoahocItemStateChanged
-        addCbMonHoc();
-    }//GEN-LAST:event_cb_khoahocItemStateChanged
-
-    private void cb_khoahocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_khoahocMouseEntered
-
-    }//GEN-LAST:event_cb_khoahocMouseEntered
-
-    private void cb_monhocMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_monhocMouseEntered
-
-    }//GEN-LAST:event_cb_monhocMouseEntered
-
-    private void cb_lopMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cb_lopMouseEntered
-        // addTable();
-    }//GEN-LAST:event_cb_lopMouseEntered
-
-    private void cb_monhocItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_monhocItemStateChanged
-        addCbLop();
-    }//GEN-LAST:event_cb_monhocItemStateChanged
-
-    private void cb_lopItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_lopItemStateChanged
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        List<SVLopMonHoc> diems = getDataTable();
+        for (SVLopMonHoc diem : diems) {
+            sinhVienLopRepo.update(diem);
+        }
         addTable();
-    }//GEN-LAST:event_cb_lopItemStateChanged
+        JOptionPane.showMessageDialog(this, "Success!");
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnSearch1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearch1ActionPerformed
+        if (!lopMonHocs.isEmpty()) {
+            sChuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
+            sMonHoc = monHocs.get(cb_monhoc.getSelectedIndex());
+            sLopMonHoc = lopMonHocs.get(cb_lop.getSelectedIndex());
+            AddStudent addStudent = new AddStudent();
+            addStudent.show();
+        } else if (!cb_monhoc.getSelectedItem().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không có lớp cho môn " + cb_monhoc.getSelectedItem().toString());
+        } else {
+
+        }
+    }//GEN-LAST:event_btnSearch1ActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        String name = txtSearch.getText();
+        for (int i = 0; i < sinhVienLopMHs.size(); i++) {
+            if (sinhVienLopMHs.get(i).getSinhVien().getTenSV().contains(name)) {
+                model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(),
+                    sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(), sinhVienLopMHs.get(i).getGhiChu()});
+            }
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void tbl_diemsvKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbl_diemsvKeyPressed
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE) {
+            int n = JOptionPane.showConfirmDialog(
+                    this, "Do you want to remove students from the class?",
+                    "Confirm!",
+                    JOptionPane.YES_NO_OPTION);
+            if (n == JOptionPane.YES_OPTION) {
+              boolean result = sinhVienLopRepo.delete(sinhVienLopMHs.get(tbl_diemsv.getSelectedRow()));
+               if(result){
+                    JOptionPane.showMessageDialog(this, "Đã xóa sinh viên khỏi lớp");
+               }
+               else{
+                    JOptionPane.showMessageDialog(this, "Xóa không thành công");
+               }
+            } else if (n == JOptionPane.NO_OPTION) {
+            } else {
+               
+            }
+        }
+    }//GEN-LAST:event_tbl_diemsvKeyPressed
 
     /**
      * @param args the command line arguments
@@ -574,7 +586,6 @@ public class ViewMain extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tbl_diemsv;
