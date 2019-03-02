@@ -189,10 +189,10 @@ public class ViewMain extends javax.swing.JFrame {
         for (int i = 0; i < model.getRowCount(); i++) {
             for (int j = 0; j < sinhVienLopMHs.size(); j++) {
                 if ((model.getValueAt(i, 0).toString()).equals(Integer.toString(sinhVienLopMHs.get(j).getSinhVien().getId()))) {
-                    double diemCC = (double) model.getValueAt(i, 2);
-                    double diemGiuaKi = (double) model.getValueAt(i, 3);
-                    double diemThi = (double) model.getValueAt(i, 4);
-                    String ghiChu = (String) model.getValueAt(i, 5);
+                    double diemCC = (double) model.getValueAt(i, 3);
+                    double diemGiuaKi = (double) model.getValueAt(i, 4);
+                    double diemThi = (double) model.getValueAt(i, 5);
+                    String ghiChu = (String) model.getValueAt(i, 6);
                     if (ghiChu == null) {
                         ghiChu = " ";
                     }
