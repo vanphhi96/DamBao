@@ -179,7 +179,7 @@ public class ViewMain extends javax.swing.JFrame {
         }
         sinhVienLopMHs = sinhVienLopRepo.getSVLopMonHoc(lopMonHocs.get(cb_lop.getSelectedIndex()).getIdLop());
         for (int i = 0; i < sinhVienLopMHs.size(); i++) {
-            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(), sinhVienLopMHs.get(i).getGhiChu()});
+            model.addRow(new Object[]{sinhVienLopMHs.get(i).getSinhVien().getId(), sinhVienLopMHs.get(i).getSinhVien().getTenSV(), sinhVienLopMHs.get(i).getSinhVien().getNgaySinhString(), sinhVienLopMHs.get(i).getDiemCC(), sinhVienLopMHs.get(i).getDiemGiuaKi(), sinhVienLopMHs.get(i).getDiemCuoiKi(), sinhVienLopMHs.get(i).getGhiChu()});
         }
     }
 
@@ -243,14 +243,14 @@ public class ViewMain extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Mã SV", "Tên SV", "Điểm CC", "Điểm giữa kì", "Điểm thi"
+                "Mã SV", "Tên SV", "Ngày Sinh", "Điểm CC", "Điểm giữa kì", "Điểm thi", "Ghi Chú"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Float.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Float.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, false
+                false, false, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -268,11 +268,8 @@ public class ViewMain extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tbl_diemsv);
         if (tbl_diemsv.getColumnModel().getColumnCount() > 0) {
-            tbl_diemsv.getColumnModel().getColumn(0).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(1).setResizable(false);
             tbl_diemsv.getColumnModel().getColumn(2).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(3).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(4).setResizable(false);
         }
 
         jLabel1.setText("Chuyên ngành: ");

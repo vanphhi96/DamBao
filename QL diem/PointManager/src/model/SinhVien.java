@@ -6,6 +6,8 @@
 package model;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +90,11 @@ public class SinhVien {
 
     public void setNienKhoa(NienKhoa nienKhoa) {
         this.nienKhoa = nienKhoa;
+    }
+    public String getNgaySinhString(){
+        DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
+        String strDate = dateFormat.format(ngaySinh);
+        return strDate;
     }
     
 }

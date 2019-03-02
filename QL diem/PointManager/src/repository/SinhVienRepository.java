@@ -84,7 +84,6 @@ public class SinhVienRepository implements ISinhVien {
                 stmt.close();
                 rs.close();
                 sinhViens.add(sv);
-
             }
         } catch (SQLException ex) {
 

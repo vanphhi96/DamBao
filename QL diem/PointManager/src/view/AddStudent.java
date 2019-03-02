@@ -27,7 +27,7 @@ public class AddStudent extends javax.swing.JFrame {
         initComponents();
         addNienKhoa();
         tv_title.setText("Chuyên ngành: "+ViewMain.sChuyenNganh.getTenChuyenNganh()+"   Môn:"+ViewMain.sMonHoc.getTenMonHoc());
-        //sinhViens = iSinhVienRepo.getByIdNienKhoa(ViewMain.nienKhoas)
+       addTable();
     }
 
     private void addNienKhoa(){
@@ -35,14 +35,16 @@ public class AddStudent extends javax.swing.JFrame {
         for(int i=0; i<ViewMain.nienKhoas.size(); i++){
             cb_nienkhoa_add.addItem(ViewMain.nienKhoas.get(i).getNienKhoa());
         }
+        addTable();
     }
     private void addTable() {
         DefaultTableModel model = (DefaultTableModel) tblSv.getModel();
         model.getDataVector().removeAllElements();
         model.fireTableDataChanged();
         sinhViens = iSinhVienRepo.getByIdNienKhoa(ViewMain.nienKhoas.get(cb_nienkhoa_add.getSelectedIndex()));
+        System.out.println("add sv "+sinhViens.size());
         for (int i = 0; i < sinhViens.size(); i++) {
-            model.addRow(new Object[]{sinhViens.get(i).getTenSV(),sinhViens.get(i).getNgaySinh(), sinhViens.get(i).getQueQuan(), 0 });
+            model.addRow(new Object[]{sinhViens.get(i).getId(),sinhViens.get(i).getTenSV(),sinhViens.get(i).getNgaySinhString(), sinhViens.get(i).getQueQuan(), false });
         }
     }
 
@@ -74,10 +76,10 @@ public class AddStudent extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, true
+                false, false, true, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
