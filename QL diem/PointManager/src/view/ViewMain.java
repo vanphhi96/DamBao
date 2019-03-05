@@ -524,6 +524,7 @@ public class ViewMain extends javax.swing.JFrame {
               boolean result = sinhVienLopRepo.delete(sinhVienLopMHs.get(tbl_diemsv.getSelectedRow()));
                if(result){
                     JOptionPane.showMessageDialog(this, "Đã xóa sinh viên khỏi lớp");
+                    addTable();
                }
                else{
                     JOptionPane.showMessageDialog(this, "Xóa không thành công");

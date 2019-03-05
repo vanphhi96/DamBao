@@ -155,12 +155,16 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
     public boolean delete(SVLopMonHoc sVLopMonHoc) {
          Connection connect = ConnectDB.getConnect();
         try {
-            String sql = "DELETE tblSVLopMonHoc WHERE idSv = ? AND idLop = ?";
+            connect.setAutoCommit(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            String sql = "DELETE tblSvLopMonHoc WHERE idSv = ? AND idLop = ?";
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setInt(1, sVLopMonHoc.getSinhVien().getId());
             stmt.setInt(2, sVLopMonHoc.getLop().getIdLop());
-            stmt.executeQuery();
-            connect.setAutoCommit(false);
+            stmt.execute();
             connect.commit();
             System.out.println("commit");
             return true;
