@@ -13,10 +13,12 @@ import irepository.IMonNganh;
 import irepository.INienKhoa;
 import irepository.ISVLopMonHoc;
 import irepository.ISinhVien;
+import java.awt.Dialog;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.ChuyenNganh;
@@ -56,11 +58,12 @@ public class ViewMain extends javax.swing.JFrame {
     public static List<NienKhoa> nienKhoas = new ArrayList<>();
     private List<MonKhoaHoc> monKhoaHocs = new ArrayList<MonKhoaHoc>();
     private List<SinhVien> sinhViens = new ArrayList<>();
-    private List<SVLopMonHoc> sinhVienLopMHs = new ArrayList<>();
+    public static List<SVLopMonHoc> sinhVienLopMHs = new ArrayList<>();
     private MonKhoaHoc monKhoaHoc = null;
     public static ChuyenNganh sChuyenNganh;
     public static MonHoc sMonHoc;
     public static LopMonHoc sLopMonHoc;
+    public static JDialog dialog;
 
     /**
      * Creates new form ViewMain
@@ -70,7 +73,6 @@ public class ViewMain extends javax.swing.JFrame {
         chuyenNganhs = chuyenNganhRepo.getAll();
         addCbChuyenNganh();
     }
-
     private void addCbMonHoc() {
         cb_monhoc.removeAllItems();
         cb_lop.removeAllItems();
@@ -106,7 +108,7 @@ public class ViewMain extends javax.swing.JFrame {
                 }
             }
         }
-
+        txtSearch.setText("");
         addCbMonHoc();
 
     }
@@ -169,7 +171,7 @@ public class ViewMain extends javax.swing.JFrame {
             addCbNienKhoa();
         }
     }
-
+    
     private void addTable() {
         DefaultTableModel model = (DefaultTableModel) tbl_diemsv.getModel();
         model.getDataVector().removeAllElements();
@@ -250,7 +252,7 @@ public class ViewMain extends javax.swing.JFrame {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Float.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, true, true, true
+                false, false, false, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -267,10 +269,6 @@ public class ViewMain extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tbl_diemsv);
-        if (tbl_diemsv.getColumnModel().getColumnCount() > 0) {
-            tbl_diemsv.getColumnModel().getColumn(1).setResizable(false);
-            tbl_diemsv.getColumnModel().getColumn(2).setResizable(false);
-        }
 
         jLabel1.setText("Chuyên ngành: ");
 
@@ -474,8 +472,8 @@ public class ViewMain extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_khoaMouseClicked
 
     private void cb_khoaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_khoaItemStateChanged
-
         addCbNienKhoa();
+
     }//GEN-LAST:event_cb_khoaItemStateChanged
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -492,8 +490,10 @@ public class ViewMain extends javax.swing.JFrame {
             sChuyenNganh = chuyenNganhs.get(cb_khoa.getSelectedIndex());
             sMonHoc = monHocs.get(cb_monhoc.getSelectedIndex());
             sLopMonHoc = lopMonHocs.get(cb_lop.getSelectedIndex());
-            AddStudent addStudent = new AddStudent();
-            addStudent.show();
+            dialog = new JDialog(this);
+            dialog.getContentPane().add(new DialogCustom());
+            dialog.setSize(800, 400);
+            dialog.setVisible(true);
         } else if (!cb_monhoc.getSelectedItem().toString().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không có lớp cho môn " + cb_monhoc.getSelectedItem().toString());
         } else {
@@ -521,17 +521,16 @@ public class ViewMain extends javax.swing.JFrame {
                     "Confirm!",
                     JOptionPane.YES_NO_OPTION);
             if (n == JOptionPane.YES_OPTION) {
-              boolean result = sinhVienLopRepo.delete(sinhVienLopMHs.get(tbl_diemsv.getSelectedRow()));
-               if(result){
-                    JOptionPane.showMessageDialog(this, "Đã xóa sinh viên khỏi lớp");
+                boolean result = sinhVienLopRepo.delete(sinhVienLopMHs.get(tbl_diemsv.getSelectedRow()));
+                if (result) {
+                    JOptionPane.showMessageDialog(this, "Success!");
                     addTable();
-               }
-               else{
-                    JOptionPane.showMessageDialog(this, "Xóa không thành công");
-               }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Can not delete student");
+                }
             } else if (n == JOptionPane.NO_OPTION) {
             } else {
-               
+
             }
         }
     }//GEN-LAST:event_tbl_diemsvKeyPressed

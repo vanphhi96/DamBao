@@ -136,7 +136,7 @@
                       <Table columnCount="7" rowCount="0">
                         <Column editable="false" title="M&#xe3; SV" type="java.lang.String"/>
                         <Column editable="false" title="T&#xea;n SV" type="java.lang.String"/>
-                        <Column editable="true" title="Ng&#xe0;y Sinh" type="java.lang.String"/>
+                        <Column editable="false" title="Ng&#xe0;y Sinh" type="java.lang.String"/>
                         <Column editable="true" title="&#x110;i&#x1ec3;m CC" type="java.lang.Double"/>
                         <Column editable="true" title="&#x110;i&#x1ec3;m gi&#x1eef;a k&#xec;" type="java.lang.Double"/>
                         <Column editable="true" title="&#x110;i&#x1ec3;m thi" type="java.lang.Float"/>
@@ -150,12 +150,12 @@
                           <Editor/>
                           <Renderer/>
                         </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                           <Title/>
                           <Editor/>
                           <Renderer/>
                         </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                           <Title/>
                           <Editor/>
                           <Renderer/>

@@ -69,20 +69,20 @@ public class SinhVienRepository implements ISinhVien {
     @Override
     public List<SinhVien> getByIdNienKhoa(NienKhoa nienKhoa) {
         List<SinhVien> sinhViens = new ArrayList<>();
-        String sql = "SELECT * FROM tblSinhVien WHERE idKhoaHoc = ?";
+        String sql = "SELECT tblSinhVien.id, tblSinhVien.idKhoaHoc, tblSinhVien.ngaySinh, tblSinhVien.queQuan, tblSinhVien.tenSV\n" +
+                        "FROM tblSinhVien, tblNienKhoa\n" +
+                        "WHERE tblSinhVien.idKhoaHoc = tblNienKhoa.id AND tblNienKhoa.id = ?";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setInt(1, nienKhoa.getId());
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 int idSV = rs.getInt("id");
                 String tenSv = rs.getString("tenSV");
                 Date ngaySinh = rs.getDate("ngaySinh");
                 String queQuan = rs.getString("queQuan");
                 SinhVien sv = new SinhVien(idSV, tenSv, ngaySinh, queQuan, nienKhoa, queQuan);
-                stmt.close();
-                rs.close();
                 sinhViens.add(sv);
             }
         } catch (SQLException ex) {

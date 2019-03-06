@@ -125,6 +125,11 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
     public boolean addSvLopMonHoc(SVLopMonHoc svLopMonHoc) {
         Connection connect = ConnectDB.getConnect();
         try {
+            connect.setAutoCommit(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
             String sql = "INSERT INTO tblSVLopMonHoc (idSv, idLop, diemChuyenCan,diemGiuaKi,diemThi, ghiChu) VALUES(?,?,?,?,?,?)";
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setInt(1, svLopMonHoc.getSinhVien().getId());
@@ -134,7 +139,6 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
             stmt.setDouble(5, svLopMonHoc.getDiemThi());
             stmt.setString(6, svLopMonHoc.getGhiChu());
             stmt.execute();
-            connect.setAutoCommit(false);
             connect.commit();
             System.out.println("add success!");
             return true;

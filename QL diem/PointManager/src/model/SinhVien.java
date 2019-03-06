@@ -23,6 +23,15 @@ public class SinhVien {
     private NienKhoa nienKhoa;
     private String queQuan;
     private List<SVLopMonHoc> svLopMonHocs = new ArrayList<>();
+    private boolean checked;
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
     public SinhVien() {
     }
 
