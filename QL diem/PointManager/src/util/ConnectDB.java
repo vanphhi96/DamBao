@@ -32,5 +32,14 @@ public class ConnectDB {
         return connectInstance;
 
     }
+    public static void main(String[] args) {
+        Connection cn = ConnectDB.getConnect();
+        if(cn!=null){
+            System.out.println("ok");
+        }
+        else{
+            System.out.println("fail");
+        }
+    }
 
 }

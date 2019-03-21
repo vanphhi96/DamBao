@@ -2,25 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/repository/NienKhoaRepository.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/ILopMonHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/model/ChuyenNganh.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/view/ViewMain.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/model/SVLopMonHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/IMonKhoaHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/IMonHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/repository/SinhVienRepository.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/repository/MonNganhRepository.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/model/SinhVien.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/repository/LopMonHocRepository.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/ISinhVien.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/model/LopMonHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/view/AddStudent.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/ISVLopMonHoc.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/irepository/INienKhoa.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/repository/SVLopMonHocRepository.java</file>
-            <file>file:/D:/HOC%20TAP/BaiTapGit/QL%20diem/PointManager/src/model/NienKhoa.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
