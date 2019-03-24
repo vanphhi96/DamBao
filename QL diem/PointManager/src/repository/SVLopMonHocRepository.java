@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,9 +62,18 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
 
     @Override
     public boolean update(SVLopMonHoc svLopMonHoc) {
+        if (svLopMonHoc.getDiemCC() < 0 || svLopMonHoc.getDiemCC() > 10) {
+            return false;
+        }
+        if (svLopMonHoc.getDiemGiuaKi() < 0 || svLopMonHoc.getDiemGiuaKi() > 10) {
+            return false;
+        }
+        if (svLopMonHoc.getDiemThi() < 0 || svLopMonHoc.getDiemThi() > 10) {
+            return false;
+        }
         Connection connect = ConnectDB.getConnect();
         try {
-            System.out.println("Phi dai ca: " + svLopMonHoc.getGhiChu());
+            connect.setAutoCommit(false);
             String sql = "UPDATE tblSVLopMonHoc SET diemChuyenCan = ?, diemGiuaKi = ?, diemThi = ?, ghiChu = ? WHERE idSv = ? AND idLop = ?";
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setDouble(1, svLopMonHoc.getDiemCC());
@@ -73,9 +83,9 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
             stmt.setInt(5, svLopMonHoc.getSinhVien().getId());
             stmt.setInt(6, svLopMonHoc.getLop().getIdLop());
             stmt.executeUpdate();
-            connect.setAutoCommit(false);
+            stmt.close();
             connect.commit();
-            System.out.println("commit");
+            System.out.println("update success!");
             return true;
 
         } catch (SQLException ex) {
@@ -139,10 +149,10 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
             stmt.setDouble(5, svLopMonHoc.getDiemThi());
             stmt.setString(6, svLopMonHoc.getGhiChu());
             stmt.execute();
+            stmt.close();
             connect.commit();
             System.out.println("add success!");
             return true;
-
         } catch (SQLException ex) {
             try {
                 connect.rollback();
@@ -157,7 +167,7 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
 
     @Override
     public boolean delete(SVLopMonHoc sVLopMonHoc) {
-         Connection connect = ConnectDB.getConnect();
+        Connection connect = ConnectDB.getConnect();
         try {
             connect.setAutoCommit(false);
         } catch (SQLException ex) {

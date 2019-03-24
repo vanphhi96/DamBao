@@ -58,10 +58,6 @@ public class MonNganhRepository implements IMonNganh {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-//                IChuyenNganh chuyenNganhRepo = new ChuyenNganhRepository();
-//                IMonHoc monHocRepo = new MonHocRepository();
-//                ChuyenNganh chuyenNganh = chuyenNganhRepo.getByID(rs.getInt("idChuyenNganh"));
-//                MonHoc monHoc = monHocRepo.getMHByID(rs.getInt("idMon"));
                 monChuyenNganh = new MonChuyenNganh(id);
                 rs.close();
                 stmt.close();
@@ -79,14 +75,14 @@ public class MonNganhRepository implements IMonNganh {
         List<MonHoc> monHocs = new ArrayList<>();
         String sql = "SELECT tblMonHoc.id, tblMonHoc.moTa, tblMonHoc.soTinChi, tblMonHoc.tenMonHoc\n"
                 + " FROM tblMonNganh, tblMonHoc \n"
-                + " WHERE idChuyenNganh = ? AND tblMonNganh.idMon = tblMonHoc.id";
+                + " WHERE tblMonNganh.idChuyenNganh = ? AND tblMonNganh.idMon = tblMonHoc.id";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setInt(1, idNganh);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                int idMon = rs.getInt("idMon");
+                int idMon = rs.getInt("id");
                 int soTinChi = rs.getInt("soTinChi");
                 String moTa = rs.getString("moTa");
                 String tenMonHoc = rs.getString("tenMonHoc");

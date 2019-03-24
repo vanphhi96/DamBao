@@ -28,7 +28,7 @@ public class NienKhoaRepository implements INienKhoa {
     public NienKhoa getByID(int idNienKhoa) {
         NienKhoa nienKhoa = null;
         try {
-            String sql = "SELECT * FROM tblNienKhoa WHERE idNienKhoa = ?";
+            String sql = "SELECT * FROM tblNienKhoa WHERE id = ?";
             Connection connect = ConnectDB.getConnect();
             PreparedStatement stmt = connect.prepareStatement(sql);
             stmt.setInt(1, idNienKhoa);
