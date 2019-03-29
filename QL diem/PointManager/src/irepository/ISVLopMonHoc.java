@@ -18,4 +18,5 @@ public interface ISVLopMonHoc {
     List<SVLopMonHoc> getSVLopMonHoc(int idLopMonHoc);
     boolean addSvLopMonHoc(SVLopMonHoc svLopMonHoc);
     boolean delete(SVLopMonHoc sVLopMonHoc);
+    List<SVLopMonHoc> getSVLopMonHocByIDSV(int idSV);
 }

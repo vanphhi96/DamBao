@@ -101,7 +101,7 @@ public class SinhVien {
         this.nienKhoa = nienKhoa;
     }
     public String getNgaySinhString(){
-        DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String strDate = dateFormat.format(ngaySinh);
         return strDate;
     }

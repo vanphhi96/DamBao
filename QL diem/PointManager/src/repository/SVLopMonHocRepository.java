@@ -85,7 +85,6 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
             stmt.executeUpdate();
             stmt.close();
             connect.commit();
-            System.out.println("update success!");
             return true;
 
         } catch (SQLException ex) {
@@ -193,6 +192,37 @@ public class SVLopMonHocRepository implements ISVLopMonHoc {
             System.out.println("rollback");
         }
         return false;
+    }
+
+    @Override
+    public List<SVLopMonHoc> getSVLopMonHocByIDSV(int idSV) {
+        List<SVLopMonHoc> sVLopMonHocs = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM tblSVLopMonHoc WHERE idSv = ?";
+            Connection connect = ConnectDB.getConnect();
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, idSV);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int idLop = rs.getInt("idLop");
+                double diemCC = rs.getDouble("diemChuyenCan");
+                double diemGiuaKi = rs.getDouble("diemGiuaKi");
+                double diemThi = rs.getDouble("diemThi");
+                String ghiChu = rs.getString("ghiChu");
+                ILopMonHoc lopMonHoc = new LopMonHocRepository();
+                LopMonHoc lmh = lopMonHoc.getByID(idLop);
+                ISinhVien sinhVienRepo = new SinhVienRepository();
+                SinhVien sv = sinhVienRepo.getByID(idSV);
+                SVLopMonHoc sVLopMonHoc = new SVLopMonHoc(sv, lmh, diemCC, diemGiuaKi, diemThi, ghiChu);
+                sVLopMonHocs.add(sVLopMonHoc);
+            }
+            stmt.close();
+            rs.close();
+            return sVLopMonHocs;
+        } catch (SQLException ex) {
+
+        }
+        return sVLopMonHocs;
     }
 
 }

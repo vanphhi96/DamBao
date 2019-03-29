@@ -6,6 +6,7 @@
 package repository;
 
 import irepository.INienKhoa;
+import irepository.ISVLopMonHoc;
 import irepository.ISinhVien;
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.NienKhoa;
+import model.SVLopMonHoc;
 import model.SinhVien;
 import util.ConnectDB;
 
@@ -81,7 +83,6 @@ public class SinhVienRepository implements ISinhVien {
             stmt.execute();
             stmt.close();
             connect.commit();
-            System.out.println("add success!");
             return true;
         } catch (SQLException ex) {
             try {
@@ -97,15 +98,43 @@ public class SinhVienRepository implements ISinhVien {
 
     @Override
     public boolean delete(int idSV) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ISVLopMonHoc iSVLopMonHoc = new SVLopMonHocRepository();
+        List<SVLopMonHoc> dslop = iSVLopMonHoc.getSVLopMonHocByIDSV(idSV);
+        for(int i=0; i<dslop.size(); i++){
+            iSVLopMonHoc.delete(dslop.get(i));
+        }
+         Connection connect = ConnectDB.getConnect();
+        try {
+            connect.setAutoCommit(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            String sql = "DELETE tblSinhVien WHERE id = ?";
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setInt(1, idSV);
+            stmt.execute();
+            connect.commit();
+            return true;
+
+        } catch (SQLException ex) {
+            try {
+                connect.rollback();
+                ex.printStackTrace();
+                return false;
+            } catch (SQLException ex1) {
+                Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        }
+        return false;
     }
 
     @Override
     public List<SinhVien> getByIdNienKhoa(NienKhoa nienKhoa) {
         List<SinhVien> sinhViens = new ArrayList<>();
-        String sql = "SELECT tblSinhVien.id, tblSinhVien.idKhoaHoc, tblSinhVien.ngaySinh, tblSinhVien.queQuan, tblSinhVien.tenSV\n"
-                + "FROM tblSinhVien, tblNienKhoa\n"
-                + "WHERE tblSinhVien.idKhoaHoc = tblNienKhoa.id AND tblNienKhoa.id = ?";
+        String sql = "SELECT id, idKhoaHoc, ngaySinh, queQuan, tenSV\n"
+                + "FROM tblSinhVien\n"
+                + "WHERE tblSinhVien.idKhoaHoc = ?";
         Connection connect = ConnectDB.getConnect();
         try {
             PreparedStatement stmt = connect.prepareStatement(sql);

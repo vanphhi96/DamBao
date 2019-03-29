@@ -18,7 +18,7 @@ public class SVLopMonHoc {
     private double diemThi = 0;
     private double diemCuoiKi = 0;
     private String ghiChu = " ";
-
+    private double diemTB =0;
     public SVLopMonHoc() {
     }
 
@@ -85,6 +85,19 @@ public class SVLopMonHoc {
 
     public void setDiemCuoiKi(double diemCuoiKi) {
         this.diemCuoiKi = diemCuoiKi;
+    }
+    
+    public double getDiemTB(){
+        return (diemCC*0.1)+(diemGiuaKi*0.2)+(diemThi*0.7);
+    }
+    
+    public String getStatus(){
+        if(getDiemTB()>4){
+            return "Đạt";
+        }
+        else{
+            return "Không đạt";
+        }
     }
 
 }
