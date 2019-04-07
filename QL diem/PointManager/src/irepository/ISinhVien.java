@@ -19,5 +19,5 @@ public interface ISinhVien {
     boolean addSinhVien(SinhVien sinhVien);
     boolean delete(int idSV);
     List<SinhVien> getByIdNienKhoa(NienKhoa nienKhoa);
-    
+    boolean updateSinhVien(SinhVien sinhVien);
 }

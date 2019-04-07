@@ -87,11 +87,12 @@ public class SinhVienRepository implements ISinhVien {
         } catch (SQLException ex) {
             try {
                 connect.rollback();
+                 System.out.println("rollback add fail");
                 return false;
             } catch (SQLException ex1) {
                 Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
             }
-            System.out.println("rollback add fail");
+          
         }
         return false;
     }
@@ -100,10 +101,10 @@ public class SinhVienRepository implements ISinhVien {
     public boolean delete(int idSV) {
         ISVLopMonHoc iSVLopMonHoc = new SVLopMonHocRepository();
         List<SVLopMonHoc> dslop = iSVLopMonHoc.getSVLopMonHocByIDSV(idSV);
-        for(int i=0; i<dslop.size(); i++){
+        for (int i = 0; i < dslop.size(); i++) {
             iSVLopMonHoc.delete(dslop.get(i));
         }
-         Connection connect = ConnectDB.getConnect();
+        Connection connect = ConnectDB.getConnect();
         try {
             connect.setAutoCommit(false);
         } catch (SQLException ex) {
@@ -152,6 +153,40 @@ public class SinhVienRepository implements ISinhVien {
 
         }
         return sinhViens;
+    }
+
+    @Override
+    public boolean updateSinhVien(SinhVien sinhVien) {
+        if (sinhVien.getNgaySinh() == null || sinhVien.getNienKhoa() == null
+                || sinhVien.getTenSV() == null || sinhVien.getQueQuan() == null) {
+            return false;
+        }
+
+        Connection connect = ConnectDB.getConnect();
+        try {
+            connect.setAutoCommit(false);
+            String sql = "UPDATE tblSinhVien SET tenSV = ?, ngaySinh = ?, queQuan = ? WHERE id = ?";
+            PreparedStatement stmt = connect.prepareStatement(sql);
+            stmt.setString(1, sinhVien.getTenSV());
+            stmt.setDate(2, sinhVien.getNgaySinh());
+            stmt.setString(3, sinhVien.getQueQuan());
+            stmt.setInt(4, sinhVien.getId());
+            stmt.executeUpdate();
+            stmt.close();
+            connect.commit();
+            return true;
+
+        } catch (SQLException ex) {
+            try {
+                connect.rollback();
+                System.out.println("rollback - add sinh vien fail");
+                return false;
+            } catch (SQLException ex1) {
+                Logger.getLogger(SVLopMonHocRepository.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            
+        }
+        return false;
     }
 
 }
